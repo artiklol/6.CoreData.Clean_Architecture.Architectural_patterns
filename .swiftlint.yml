@@ -1,0 +1,5 @@
+excluded: 
+  - Pods
+  - task_4/Scenes/Details/DetailsModels.swift
+  - task_4/Scenes/PreDetails/PreDetailsModels.swift
+  - task_4/Scenes/Main/MainModels.swift
