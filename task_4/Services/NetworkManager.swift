@@ -14,9 +14,9 @@ class NetworkManager {
     static private let informationStandsUrl = "https://belarusbank.by/api/infobox"
     static private var banksUrl = "https://belarusbank.by/api/filials_info"
 
-    static private var statusCodeAtm = 0
-    static private var statusCodeInformationStands = 0
-    static private var statusCodBank = 0
+    static private var statusCodeAtm = Int()
+    static private var statusCodeInformationStands = Int()
+    static private var statusCodBank = Int()
 
     static func fetchDataAtm(completion: @escaping ([ATM], Int) -> Void) {
         guard let url = URL(string: atmsUrl) else { return }

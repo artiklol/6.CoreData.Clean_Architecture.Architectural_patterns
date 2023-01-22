@@ -14,7 +14,7 @@ class ATM: BelarusBank, Codable {
         return id
     }
     override var typeName: String {
-        return typeNameATM
+        return ATM.typeNameATM
     }
     override var cityBelarusbank: String {
         return city
@@ -24,7 +24,7 @@ class ATM: BelarusBank, Codable {
                                       longitude: Double(gpsY) ?? 0)
     }
 
-    let typeNameATM = "Банкомат"
+    static let typeNameATM = "Банкомат"
     let id: String
     let area: Area
     let cityType: CityType
@@ -151,6 +151,7 @@ enum AddressType: String, Codable {
 }
 
 enum Area: String, Codable {
+    case empty = ""
     case brestRegion = "Брестская"
     case vitebskRegion = "Витебская"
     case gomelRegion = "Гомельская"
@@ -161,11 +162,13 @@ enum Area: String, Codable {
 }
 
 enum ATMError: String, Codable {
+    case empty = ""
     case yes = "да"
-    case no = "нет"
+    case not = "нет"
 }
 
 enum ATMTypeEnum: String, Codable {
+    case empty = ""
     case externalAtm = "Внешний"
     case internalAtm = "Внутренний"
     case streetAtm = "Уличный"

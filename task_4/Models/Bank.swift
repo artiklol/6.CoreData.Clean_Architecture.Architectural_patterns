@@ -14,7 +14,7 @@ class Bank: BelarusBank, Codable {
         return filialId
     }
     override var typeName: String {
-        return typeNameBank
+        return Bank.typeNameBank
     }
     override var cityBelarusbank: String {
         return city
@@ -24,7 +24,7 @@ class Bank: BelarusBank, Codable {
                                       longitude: Double(gpsY) ?? 0)
     }
 
-    let typeNameBank = "Банк"
+    static let typeNameBank = "Банк"
     let filialId: String
     let sapId: String
     let filialName: String
@@ -61,7 +61,10 @@ class Bank: BelarusBank, Codable {
         case cbuNum = "cbu_num"
     }
 
-    init(filialId: String, sapId: String, filialName: String, cityType: String, city: String, addressType: String, address: String, house: String, infoWorktime: String, gpsX: String, gpsY: String, phoneInfo: String, belNumberSchet: String, foreignNumberSchet: String, filialNum: String, cbuNum: String) {
+    init(filialId: String, sapId: String, filialName: String, cityType: String, city: String,
+         addressType: String, address: String, house: String, infoWorktime: String, gpsX: String,
+         gpsY: String, phoneInfo: String, belNumberSchet: String, foreignNumberSchet: String,
+         filialNum: String, cbuNum: String) {
         self.filialId = filialId
         self.sapId = sapId
         self.filialName = filialName

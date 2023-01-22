@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CollectionViewCell: UICollectionViewCell {
+class ListCell: UICollectionViewCell {
 
     static let identifier = "BelarusbankList"
 
@@ -76,31 +76,31 @@ class CollectionViewCell: UICollectionViewCell {
         contentView.addSubview(infoLabel)
     }
 
-    func dataAtmInCell(element: ATM) {
+    func dataAtmInCell(element: Main.FetchData.ViewModel.DisplayedData) {
         contentView.backgroundColor = UIColor(named: "Green")
 
         nameObjectLabel.text = element.installPlace
         workTimeLabel.text = element.workTime
         otherTitleLabel.text = "Валюта"
-        otherLabel.text = element.fixCurrency.rawValue
+        otherLabel.text = element.currency
     }
 
-    func dataInfoStandInCell(element: InformationStand) {
+    func dataInfoStandInCell(element: Main.FetchData.ViewModel.DisplayedData) {
         contentView.backgroundColor = UIColor(named: "GreenTwo")
 
         nameObjectLabel.text = element.installPlace
         workTimeLabel.text = element.workTime
         otherTitleLabel.text = "Валюта"
-        otherLabel.text = element.fixCurrency.rawValue
+        otherLabel.text = element.currency
     }
 
-    func dataBankInCell(element: Bank) {
+    func dataBankInCell(element: Main.FetchData.ViewModel.DisplayedData) {
         contentView.backgroundColor = UIColor(named: "GreenThree")
 
-        nameObjectLabel.text = element.filialName
-        workTimeLabel.text = element.infoWorktime
+        nameObjectLabel.text = element.installPlace
+        workTimeLabel.text = element.workTime
         otherTitleLabel.text = "Телефон"
-        otherLabel.text = element.phoneInfo
+        otherLabel.text = element.phone
     }
 
 }

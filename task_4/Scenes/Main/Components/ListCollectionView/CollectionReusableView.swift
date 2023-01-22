@@ -23,7 +23,6 @@ class HeaderCollectionReusableView: UICollectionReusableView {
         super.init(frame: frame)
 
         addSubview(titleHeader)
-
         setConstraint()
     }
 

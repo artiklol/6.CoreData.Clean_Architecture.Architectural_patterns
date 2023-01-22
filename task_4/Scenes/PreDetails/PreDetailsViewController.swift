@@ -1,14 +1,17 @@
 //
-//  TestViewController.swift
+//  PreDetailsViewController.swift
 //  task_4
 //
-//  Created by Artem Sulzhenko on 31.12.2022.
+//  Created by Artem Sulzhenko on 19.01.2023.
 //
 
 import UIKit
-import SnapKit
 
-class PreliminaryDetailsViewController: UIViewController {
+protocol PreDetailsDisplayLogic: AnyObject {
+    func displayData(viewModel: PreDetails.FetchData.ViewModel)
+}
+
+class PreDetailsViewController: UIViewController, PreDetailsDisplayLogic {
 
     private lazy var nameObjectLabel: UILabel = {
         let label = UILabel()
@@ -51,19 +54,52 @@ class PreliminaryDetailsViewController: UIViewController {
     private lazy var secondLabel = UILabel()
     private lazy var secondStackView = UIStackView()
 
-    private var atmElement: ATM?
-    private var infoStandElement: InformationStand?
-    private var bankElement: Bank?
-    private lazy var coordinateUserLocation: (x: Double, y: Double) = (0, 0)
+    var interactor: PreDetailsBusinessLogic?
+    var router: (NSObjectProtocol & PreDetailsRoutingLogic & PreDetailsDataPassing)?
+    private var data: MainDataStore?
 
+    func configure(viewModel: MainDataStore) {
+        self.data = viewModel
+    }
+    // MARK: Object lifecycle
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        PreDetailsConfigurator.shared.configure(with: self)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        PreDetailsConfigurator.shared.configure(with: self)
+    }
+
+    // MARK: View lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        doSomething()
         view.backgroundColor = UIColor(named: "ViewBackgroundColor")
 
         addUIContent()
         setConstraint()
     }
 
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        if UIDevice.current.orientation.isLandscape {
+            if let sheet = self.sheetPresentationController {
+                sheet.detents = [.large()]
+                sheet.prefersGrabberVisible = true
+                sheet.prefersEdgeAttachedInCompactHeight = true
+            }
+        } else {
+            if let sheet = self.sheetPresentationController {
+                sheet.detents = [.medium()]
+                sheet.prefersGrabberVisible = true
+                sheet.prefersEdgeAttachedInCompactHeight = false
+            }
+        }
+    }
+
+    // MARK: Do something
     private func addUIContent() {
         view.addSubview(mainStackView)
         view.addSubview(nameObjectLabel)
@@ -116,69 +152,35 @@ class PreliminaryDetailsViewController: UIViewController {
         mainStackView.addArrangedSubview(stackView)
     }
 
-    func atmElementInPreDetails(element: ATM, coordinate: (x: Double, y: Double)) {
-        nameObjectLabel.text = element.installPlace
-        workTimeTitleLabel.text = "Режим работы"
-        workTimeLabel.text = element.workTime
-        firstTitleLabel.text = "Валюта"
-        firstLabel.text = element.fixCurrency.rawValue
-        secondTitleLabel.text = "Наличие cash in"
-        secondLabel.text = element.cashIn.rawValue
-
-        infoStandElement = nil
-        bankElement = nil
-        self.atmElement = element
-        coordinateUserLocation = coordinate
+    func doSomething() {
+        let request = PreDetails.FetchData.Request()
+        interactor?.fetchData(request: request)
     }
 
-    func infoStandElementInPreDetails(element: InformationStand, coordinate: (x: Double, y: Double)) {
-        nameObjectLabel.text = element.installPlace
+    func displayData(viewModel: PreDetails.FetchData.ViewModel) {
+        nameObjectLabel.text = viewModel.displayedData.installPlace
         workTimeTitleLabel.text = "Режим работы"
-        workTimeLabel.text = element.workTime
-        firstTitleLabel.text = "Валюта"
-        firstLabel.text = element.fixCurrency.rawValue
-        secondTitleLabel.text = "Наличие cash in"
-        secondLabel.text = element.cashIn.rawValue
+        workTimeLabel.text = viewModel.displayedData.workTime
 
-        atmElement = nil
-        bankElement = nil
-        self.infoStandElement = element
-        coordinateUserLocation = coordinate
-    }
+        if viewModel.displayedData.currency != nil {
+            firstTitleLabel.text = "Валюта"
+            firstLabel.text = viewModel.displayedData.currency
+        } else {
+            firstTitleLabel.text = "Адрес"
+            firstLabel.text = viewModel.displayedData.fullAddress
+        }
 
-    func bankElementInPreDetails(element: Bank, coordinate: (x: Double, y: Double)) {
-        nameObjectLabel.text = element.filialName
-        workTimeTitleLabel.text = "Режим работы"
-        workTimeLabel.text = element.infoWorktime
-        firstTitleLabel.text = "Адрес"
-        firstLabel.text = "\(element.addressType) \(element.address) \(element.house)"
-        secondTitleLabel.text = "Телефон"
-        secondLabel.text = element.phoneInfo
+        if viewModel.displayedData.cashIn != nil {
+            secondTitleLabel.text = "Наличие cash in"
+            secondLabel.text = viewModel.displayedData.cashIn
+        } else {
+            secondTitleLabel.text = "Телефон"
+            secondLabel.text = viewModel.displayedData.phone
+        }
 
-        atmElement = nil
-        infoStandElement = nil
-        self.bankElement = element
-        coordinateUserLocation = coordinate
     }
 
     @objc func detailButtonTap() {
-        let details = DetailsViewController()
-
-        if atmElement != nil {
-            guard let element = atmElement else { return }
-            details.atmDataInDetails(element: element, coord: coordinateUserLocation)
-        } else if infoStandElement != nil {
-            guard let element = infoStandElement else { return }
-            details.infoStandDataInDetails(element: element, coord: coordinateUserLocation)
-        } else if bankElement != nil {
-            guard let element = bankElement else { return }
-            details.bankDataInDetails(element: element, coord: coordinateUserLocation)
-        }
-        let navigationController = UINavigationController(rootViewController: details)
-
-        navigationController.modalPresentationStyle = .fullScreen
-
-        present(navigationController, animated: true, completion: nil)
+        router?.routeToDetails()
     }
-
 }
